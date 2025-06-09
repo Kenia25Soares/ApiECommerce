@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ApiECommerce.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiECommerce.Context
 {
