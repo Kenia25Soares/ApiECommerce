@@ -107,5 +107,51 @@ namespace ApiECommerce.Controllers
 
             return Ok(orders);
         }
+
+
+        // GET: api/Orders/OrderDetails/5
+        // Retorna os detalhes de um pedido específico, incluindo informações sobre
+        // os produtos associados a esse pedido.
+        [HttpGet("[action]/{orderId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrderDetails(int orderId)
+        {
+            /*var pedidoDetalhes = await (from detalhePedido in dbContext.DetalhesPedido
+                                        join pedido in dbContext.Pedidos on detalhePedido.PedidoId equals pedido.Id
+                                        join produto in dbContext.Produtos on detalhePedido.ProdutoId equals produto.Id
+                                        where detalhePedido.PedidoId == pedidoId
+                                        select new
+                                        {
+                                            Id = detalhePedido.Id,
+                                            Quantidade = detalhePedido.Quantidade,
+                                            SubTotal = detalhePedido.ValorTotal,
+                                            ProdutoNome = produto.Nome,
+                                            ProdutoImagem = produto.UrlImagem,
+                                            ProdutoPreco = produto.Preco
+                                        }).ToListAsync();*/
+
+            var orderDetails = await _appDbContext.OrderDetails
+                .Where(od => od.OrderId == orderId)
+                .Include(od => od.Order)
+                .Include(od => od.Product)
+                .Select(od => new
+                {
+                    Id = od.Id,
+                    Quantity = od.Quantity,
+                    SubTotal = od.Total,
+                    ProductName = od.Product!.Name, 
+                    ProductImage = od.Product.UrlImage, // Assuming Product has a UrlImage property
+                    Price = od.Product.Price
+                })
+                .ToListAsync();
+
+            if (orderDetails == null || orderDetails.Count == 0)
+            {
+                return NotFound("Detalhes do pedido não encontrados.");
+            }
+
+            return Ok(orderDetails);
+        }
     }
 }
