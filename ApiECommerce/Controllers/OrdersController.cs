@@ -67,7 +67,45 @@ namespace ApiECommerce.Controllers
                     await transaction.RollbackAsync();
                     return BadRequest("Ocorreu um erro ao processar o pedido."); 
                 }
+            }  
+        }
+
+
+        // GET: api/Pedidos/PedidosPorUser/5
+        // Obtêm todos os pedidos de um user específico com base no UserId.
+        [HttpGet("[action]/{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrdersByUser(int userId)
+        {
+            /*var orders = await (from pedido in dbContext.Pedidos
+                                 where pedido.UsuarioId == usuarioId
+                                 orderby pedido.DataPedido descending
+                                 select new
+                                 {
+                                     Id = pedido.Id,
+                                     PedidoTotal = pedido.ValorTotal,
+                                     DataPedido = pedido.DataPedido,
+                                 }).ToListAsync();*/
+
+            var orders = await _appDbContext.Orders
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.OrderDate)
+                .Select(o => new
+                {
+                    Id = o.Id,
+                    Total = o.Total,
+
+                    OrderDate = o.OrderDate,
+                })
+                .ToListAsync();
+
+            if (orders == null || orders.Count == 0)
+            {
+                return NotFound("Não foram encontrados pedidos para o utilizador especificado.");
             }
+
+            return Ok(orders);
         }
     }
 }
