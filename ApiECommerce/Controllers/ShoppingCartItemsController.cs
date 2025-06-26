@@ -34,7 +34,7 @@ namespace ApiECommerce.Controllers
                                            select new
                                            {
                                                Id = s.Id,
-                                               Price = s.UnitPrice,
+                                               UnitPrice = p.Price,
                                                Total = s.Total,
                                                Quantity = s.Quantity,
                                                ProductId = p.Id,

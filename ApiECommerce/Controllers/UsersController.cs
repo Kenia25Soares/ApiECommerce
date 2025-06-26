@@ -52,8 +52,9 @@ namespace ApiECommerce.Controllers
                 return NotFound("O utilizador não existe");
             }
 
-            var key = _config["JWT:Key"] ?? throw new ArgumentNullException("JWT:Key", "JWT:Key cannot be null.");
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            //var key = _config["JWT:Key"] ?? throw new ArgumentNullException("JWT:Key", "JWT:Key cannot be null.");
+            //var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]!));
 
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -66,17 +67,18 @@ namespace ApiECommerce.Controllers
                 issuer: _config["JWT:Issuer"],
                 audience: _config["JWT:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(10),
+                expires: DateTime.Now.AddDays(5),
                 signingCredentials: credentials);
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
             return new ObjectResult(new
             {
-                AccessToken = jwt,
-                TokenType = "bearer",
-                UserId = currentUser.Id,
-                UserName = currentUser.Name
+                accessToken = jwt,
+                expiration = token.ValidTo,
+                tokenType = "bearer",
+                userId = currentUser.Id,
+                userName = currentUser.Name
             });
         }
 
