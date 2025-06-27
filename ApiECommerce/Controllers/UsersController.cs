@@ -78,7 +78,9 @@ namespace ApiECommerce.Controllers
                 expiration = token.ValidTo,
                 tokenType = "bearer",
                 userId = currentUser.Id,
-                userName = currentUser.Name
+                userName = currentUser.Name,
+                email = currentUser.Email,
+                phone = currentUser.Phone
             });
         }
 

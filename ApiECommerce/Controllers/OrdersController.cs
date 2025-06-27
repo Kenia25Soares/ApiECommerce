@@ -73,6 +73,7 @@ namespace ApiECommerce.Controllers
 
         // GET: api/Pedidos/PedidosPorUser/5
         // Obtêm todos os pedidos de um user específico com base no UserId.
+        //[HttpGet("OrdersByUser/{userId}")]
         [HttpGet("[action]/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
