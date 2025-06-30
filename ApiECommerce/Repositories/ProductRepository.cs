@@ -15,19 +15,27 @@ namespace ApiECommerce.Repositories
 
         public async Task<IEnumerable<Product>> GetBestSellerProductsAsync()
         {
-            return await _appDbContext.Products.Where(p => p.BestSeller).ToListAsync();
+            return await _appDbContext.Products
+                .AsNoTracking()
+                .Where(p => p.BestSeller)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Product>> GetPopularProductsAsync()
         {
-            return await _appDbContext.Products.Where(p => p.Popular).ToListAsync();
+            return await _appDbContext.Products
+                .AsNoTracking()
+                .Where(p => p.Popular)
+                .ToListAsync();
         }
 
         public async Task<Product> GetProductDetailsAsync(int id)
         {
-            var productDetail = await _appDbContext.Products.FirstOrDefaultAsync(p => p.Id == id);
+            var productDetail = await _appDbContext.Products
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id);
 
-            //if (productDetail is null) throw new InvalidOperationException("O produto procurado não existe");
+            if (productDetail is null) throw new InvalidOperationException();
 
             return productDetail!;
         }

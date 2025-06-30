@@ -90,18 +90,18 @@ namespace ApiECommerce.Controllers
                                  }).ToListAsync();*/
 
             var orders = await _appDbContext.Orders
+                .AsNoTracking()  // Uso de AsNoTracking para desligar o rastreamento de alterações, pois não precisamos modificar esses dados.
                 .Where(o => o.UserId == userId)
                 .OrderByDescending(o => o.OrderDate)
                 .Select(o => new
                 {
                     Id = o.Id,
                     Total = o.Total,
-
                     OrderDate = o.OrderDate,
                 })
                 .ToListAsync();
 
-            if (orders == null || orders.Count == 0)
+            if (orders is null || orders.Count == 0)
             {
                 return NotFound("Não foram encontrados pedidos para o utilizador especificado.");
             }
@@ -132,10 +132,10 @@ namespace ApiECommerce.Controllers
                                             ProdutoPreco = produto.Preco
                                         }).ToListAsync();*/
 
-            var orderDetails = await _appDbContext.OrderDetails
+            var orderDetails = await _appDbContext.OrderDetails.AsNoTracking()  // Uso de AsNoTracking para desligar o rastreamento de alterações, pois não precisamos modificar esses dados.
                 .Where(od => od.OrderId == orderId)
-                .Include(od => od.Order)
-                .Include(od => od.Product)
+                //.Include(od => od.Order)
+                //.Include(od => od.Product)
                 .Select(od => new
                 {
                     Id = od.Id,
@@ -147,10 +147,14 @@ namespace ApiECommerce.Controllers
                 })
                 .ToListAsync();
 
-            if (orderDetails == null || orderDetails.Count == 0)
+            if (!orderDetails.Any())
             {
                 return NotFound("Detalhes do pedido não encontrados.");
             }
+            //if (orderDetails == null || orderDetails.Count == 0)
+            //{
+            //    return NotFound("Detalhes do pedido não encontrados.");
+            //}
 
             return Ok(orderDetails);
         }
